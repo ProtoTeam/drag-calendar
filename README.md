@@ -15,7 +15,7 @@
 
 ### 使用
 
-    npm install calendar --save
+    npm install drag-calendar --save
 
 然后在你的项目里
 
