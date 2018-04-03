@@ -2,7 +2,7 @@
 一个可拖拽的日历组件
 
 ### 项目效果：
-![image](https://github.com/ProtoTeam/drag-calendar/tree/master/running.gif)
+![image](https://gw.alipayobjects.com/zos/rmsportal/vmcQNKFkrxJGuHghVWzs.gif)
 
 ### 运行demo
 运行demo请clone项目并进入项目的demo目录
