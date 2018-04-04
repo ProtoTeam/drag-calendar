@@ -7,9 +7,9 @@
 ### 运行demo
 运行demo请clone项目并进入项目的demo目录
 
-    tnpm install
+    npm install
 
-    tnpm start
+    npm start
 
 然后访问 localhost:8000/ 就能看到。
 
