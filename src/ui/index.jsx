@@ -12,13 +12,6 @@ class Calendar extends PureComponent {
     className: PropTypes.string,
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      monthStr: this.props.monthStr,
-    };
-  }
-
   calDate = monthStr => {
     const newDateData = [];
     const startDay = moment(monthStr).startOf('month').day();
@@ -51,7 +44,7 @@ class Calendar extends PureComponent {
     let lastMonthEndDate = moment(monthStr).subtract(1, 'month').endOf('month').date();
     const lastMonthEndDay = moment(monthStr).subtract(1, 'month').endOf('month').day();
     if (lastMonthEndDay < 6) {
-      for (let i = lastMonthEndDay ; i >= 0; i--) {
+      for (let i = lastMonthEndDay; i >= 0; i--) {
         const tempIndex = lastMonthEndDate--;
         newDateData[i] = {
           date: moment(monthStr).subtract(1, 'month').add(tempIndex - 1, 'd').format('YYYY-MM-DD'),
@@ -66,28 +59,26 @@ class Calendar extends PureComponent {
     return newDateData;
   };
 
-  deleteMonth = ()=> {
-    const { monthStr } = this.state;
+  deleteMonth = () => {
+    const { changeMonth, monthStr } = this.props;
     const newMonthStr = moment(monthStr).subtract(1, 'M').format('YYYY-MM');
-    this.setState({
-      monthStr: newMonthStr,
-    });
+    changeMonth(newMonthStr);
   }
 
-  addMonth = ()=> {
-    const { monthStr } = this.state;
+  addMonth = () => {
+    const { changeMonth, monthStr } = this.props;
     const newMonthStr = moment(monthStr).add(1, 'M').format('YYYY-MM');
-    this.setState({
-      monthStr: newMonthStr,
-    });
+    changeMonth(newMonthStr);
   }
 
   render() {
-    const { eventList, onChangeTime, createNewEvent, deleteEvent, eventForm } = this.props;
-    const { monthStr } = this.state;
+    const {
+      eventList, onChangeTime, createNewEvent, deleteEvent, eventForm, draggable, popoverControl, monthStr, children, dateType
+    } = this.props;
     const date = this.calDate(monthStr);
     return (
       <div className="x-calendar">
+        {children ? children : null}
         <div className="date-header">
           <div className="date-string">{moment(monthStr).format("YYYY 年 MM 月")}</div>
           <div className="date-switcher">
@@ -117,6 +108,9 @@ class Calendar extends PureComponent {
           createNewEvent={createNewEvent}
           deleteEvent={deleteEvent}
           eventForm={eventForm}
+          dateType={dateType || 'YYYY-MM-DD'}
+          popoverControl={popoverControl === false ? false : true}
+          draggable={draggable === false ? false : true}
         />
       </div>
     );

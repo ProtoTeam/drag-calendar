@@ -1,6 +1,6 @@
 {
   "name": "drag-calendar",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A draggable calendar",
   "main": "dist/index.js",
   "dependencies": {
@@ -49,6 +49,6 @@
     "type": "git",
     "url": ""
   },
-  "author": "",
+  "author": "panyifei",
   "license": "ISC"
 }

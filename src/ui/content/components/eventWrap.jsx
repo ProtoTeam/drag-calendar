@@ -10,13 +10,13 @@ class EventWrap extends PureComponent {
   };
 
   render() {
-    const { event } = this.props;
+    const { event, draggable } = this.props;
 
     return (
       <div className="d-event-content">
-        { !event.hasLast ? <Backward {...this.props} /> : null}
+        {!event.hasLast ? <Backward {...this.props} /> : null}
         <Event {...this.props} />
-        { !event.hasNext ? <Forward {...this.props} /> : null}
+        {!event.hasNext ? <Forward {...this.props} /> : null}
       </div>
     );
   }

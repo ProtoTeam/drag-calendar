@@ -8,14 +8,19 @@ class Week extends PureComponent {
   };
 
   render() {
-    const { eventList, lastEventsArr, resetEventLists, setHoverEventList, createNewEvent, deleteEvent, eventForm,
-      onChangeTime, weekArr, setHoverState, clearDragEvent } = this.props;
+    const {
+      eventList, lastEventsArr, resetEventLists, setHoverEventList, createNewEvent, deleteEvent, eventForm,
+      onChangeTime, weekArr, setHoverState, clearDragEvent, draggable, popoverControl, dateType
+    } = this.props;
     return (
-      <div  className="w">
-        {weekArr.map(dateData => {
+      <div className="w">
+        {weekArr.map((dateData, index) => {
           return (
             <Day
-              key={dateData.date}
+              dateType={dateType}
+              popoverControl={popoverControl}
+              draggable={draggable}
+              key={index}
               dateData={dateData}
               lastEventsArr={lastEventsArr}
               eventList={eventList}

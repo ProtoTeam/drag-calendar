@@ -25,9 +25,9 @@ export default class DateContent extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if(!_.isEqual(nextProps.eventList, this.state.eventList)) {
+    if (!_.isEqual(nextProps.eventList, this.state.eventList)) {
       this.setState({
-        eventList:  _.cloneDeep(nextProps.eventList),
+        eventList: _.cloneDeep(nextProps.eventList),
       });
     }
   }
@@ -36,15 +36,15 @@ export default class DateContent extends PureComponent {
    * 拖动的时候显示预览效果
    */
   setHoverEventList = data => {
-    const { hoverDate, dragType, id, targetDate } = data;
+    const { hoverDate, dragType, id, targetDate, dateType } = data;
     const { eventList } = this.state;
 
     const newEventList = [];
     const event = _.find(eventList, { id });
     const diffStart = event ? moment(targetDate).valueOf() - moment(event.startTime).valueOf() : '';
     const dateMils = event ? moment(event.endTime).valueOf() - moment(event.startTime).valueOf() : '';
-    const newStartTime = moment(moment(hoverDate).valueOf() - diffStart).format('YYYY-MM-DD');
-    const newEndTime = moment(moment(hoverDate).valueOf() + dateMils - diffStart).format('YYYY-MM-DD');
+    const newStartTime = moment(moment(hoverDate).valueOf() - diffStart).format(dateType);
+    const newEndTime = moment(moment(hoverDate).valueOf() + dateMils - diffStart).format(dateType);
     const newRes = Object.assign({}, event, { id: TEMP_SHOW_ID, startTime: newStartTime, endTime: newEndTime, _hide: false, _temp: true });
 
     _.forEach(eventList, e => {
@@ -53,18 +53,26 @@ export default class DateContent extends PureComponent {
         case Types.BACKWARD:
           res = e;
           if (e.id === id && moment(e.endTime).valueOf() >= moment(hoverDate).valueOf()) {
-            res = Object.assign({}, e, { startTime: hoverDate });
+            // 拖拽预览的时候要计算时分秒
+            const daysM = moment(moment(event.startTime).format('YYYY-MM-DD')).valueOf() - moment(hoverDate).valueOf();
+            const hourMinutes = moment(event.startTime).valueOf() - daysM - moment(hoverDate).valueOf();
+            const finalHoverDate = moment(moment(hoverDate).valueOf() + hourMinutes).format(dateType);
+            res = Object.assign({}, e, { startTime: finalHoverDate });
           }
           break;
         case Types.FORWARD:
           res = e;
           if (e.id === id && moment(e.startTime).valueOf() <= moment(hoverDate).valueOf()) {
-            res = Object.assign({}, e, { endTime: hoverDate });
+            // 拖拽预览的时候要计算时分秒
+            const daysM = moment(moment(event.endTime).format('YYYY-MM-DD')).valueOf() - moment(hoverDate).valueOf();
+            const hourMinutes = moment(event.endTime).valueOf() - daysM - moment(hoverDate).valueOf();
+            const finalHoverDate = moment(moment(hoverDate).valueOf() + hourMinutes).format(dateType);
+            res = Object.assign({}, e, { endTime: finalHoverDate });
           }
           break;
         case Types.EVENT:
           res = e;
-          if (e.id === id && !_.find(eventList, { id : TEMP_SHOW_ID })) {
+          if (e.id === id && !_.find(eventList, { id: TEMP_SHOW_ID })) {
             newEventList.push(newRes);
           }
           if (e.id === TEMP_SHOW_ID && e._temp === true) {
@@ -100,10 +108,10 @@ export default class DateContent extends PureComponent {
   toWeekDateArr = dateData => {
     const res = [];
     dateData.forEach((data, index) => {
-      if (index%7 === 0) {
+      if (index % 7 === 0) {
         res.push([data]);
       } else {
-        res[(index- index%7) / 7 ].push(data);
+        res[(index - index % 7) / 7].push(data);
       }
     });
     return res;
@@ -113,10 +121,10 @@ export default class DateContent extends PureComponent {
    * 计算hover状态，打上_hover标记
    */
   addHoverStatus = (dateData) => {
-    const { eventList } = this.props;
+    const { eventList, dateType } = this.props;
     const { hoverDate, hoverEventId, targetDate, dragType } = this.state;
     if (!hoverEventId && !hoverDate) return dateData;
-    const event =  _.find(eventList, { id: hoverEventId });
+    const event = _.find(eventList, { id: hoverEventId });
     const diffStart = event ? moment(targetDate).valueOf() - moment(event.startTime).valueOf() : '';
     const dateMils = event ? moment(event.endTime).valueOf() - moment(event.startTime).valueOf() : '';
     let hoverStartTime;
@@ -124,29 +132,29 @@ export default class DateContent extends PureComponent {
 
     switch (dragType) {
       case Types.EVENT:
-        hoverStartTime = moment(moment(hoverDate).valueOf() - diffStart).format('YYYY-MM-DD');
-        hoverEndTime = moment(moment(hoverDate).valueOf() + dateMils - diffStart).format('YYYY-MM-DD');
+        hoverStartTime = moment(moment(hoverDate).valueOf() - diffStart).format(dateType);
+        hoverEndTime = moment(moment(hoverDate).valueOf() + dateMils - diffStart).format(dateType);
         break;
       case Types.BACKWARD:
-        hoverStartTime = moment(hoverDate).format('YYYY-MM-DD');
+        hoverStartTime = moment(hoverDate).format(dateType);
         hoverEndTime = event.endTime;
         break;
       case Types.FORWARD:
         hoverStartTime = event.startTime;
-        hoverEndTime = moment(hoverDate).format('YYYY-MM-DD');
+        hoverEndTime = moment(hoverDate).format(dateType);
         break;
       case Types.NEW:
         hoverStartTime = targetDate;
         hoverEndTime = hoverDate;
         if (moment(targetDate).valueOf() > moment(hoverDate).valueOf()) {
-          hoverStartTime = hoverDate ;
+          hoverStartTime = hoverDate;
           hoverEndTime = targetDate;
         }
     }
 
     dateData.forEach(date => {
-      if (moment(date.date).valueOf() >= moment(hoverStartTime).valueOf()
-        && moment(date.date).valueOf() <= moment(hoverEndTime).valueOf()) {
+      if (moment(date.date).valueOf() >= moment(moment(hoverStartTime).format('YYYY-MM-DD')).valueOf()
+        && moment(date.date).valueOf() <= moment(moment(hoverEndTime).format('YYYY-MM-DD')).valueOf()) {
         date._hover = true;
       }
     });
@@ -158,7 +166,7 @@ export default class DateContent extends PureComponent {
    */
   clearDragEvent = (id) => {
     const { eventList } = this.state;
-    const newEventList = _.map(eventList, function(e) {
+    const newEventList = _.map(eventList, function (e) {
       return { ...e, _hide: e.id === id };
     });
     this.setState({
@@ -176,7 +184,9 @@ export default class DateContent extends PureComponent {
   }
 
   render() {
-    const { dateData, onChangeTime, createNewEvent, deleteEvent, eventForm } = this.props;
+    const {
+      dateData, onChangeTime, createNewEvent, deleteEvent, eventForm, draggable, popoverControl, dateType
+    } = this.props;
     const { eventList } = this.state;
     const showData = this.addHoverStatus(JSON.parse(JSON.stringify(dateData)));
 
@@ -190,6 +200,9 @@ export default class DateContent extends PureComponent {
           {this.toWeekDateArr(showData).map((weekArr, index) => {
             return (
               <Week
+                dateType={dateType}
+                draggable={draggable}
+                popoverControl={popoverControl}
                 key={index}
                 weekArr={weekArr}
                 eventList={eventList}

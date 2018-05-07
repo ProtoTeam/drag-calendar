@@ -1,5 +1,7 @@
 import moment from 'moment';
-import { Types } from '../../util/constant';
+import {
+  Types
+} from '../../util/constant';
 
 export const forwardSource = {
   beginDrag(props) {
@@ -13,8 +15,14 @@ export const forwardSource = {
       props.resetEventLists();
       return;
     }
-    const { dropTime } = monitor.getDropResult();
-    props.onChangeTime(props.event.id, props.event.startTime, dropTime);
+    const {
+      dropTime,
+      dateType
+    } = monitor.getDropResult();
+    const daysM = moment(moment(props.event.endTime).format('YYYY-MM-DD')).valueOf() - moment(dropTime).valueOf();
+    const hourMinutes = moment(props.event.endTime).valueOf() - daysM - moment(dropTime).valueOf();
+    const finalEndTime = moment(moment(dropTime).valueOf() + hourMinutes).format(dateType);
+    props.onChangeTime(props.event.id, props.event.startTime, finalEndTime);
   },
 };
 
@@ -31,9 +39,12 @@ export const eventSource = {
       props.resetEventLists();
       return;
     }
-    const { dropTime } = monitor.getDropResult();
+    const {
+      dropTime,
+      dateType
+    } = monitor.getDropResult();
     const diff = moment(props.event.date).valueOf() - moment(props.event.startTime).valueOf();
-    const newStartTime = moment(moment(dropTime).valueOf() - diff).format('YYYY-MM-DD');
+    const newStartTime = moment(moment(dropTime).valueOf() - diff).format(dateType);
     props.onChangeTime(props.event.id, newStartTime);
   },
 };
@@ -50,8 +61,16 @@ export const backwardSource = {
       props.resetEventLists();
       return;
     }
-    const { dropTime } = monitor.getDropResult();
-    props.onChangeTime(props.event.id, dropTime, props.event.endTime);
+    const {
+      dropTime,
+      dateType
+    } = monitor.getDropResult();
+
+    const daysM = moment(moment(props.event.startTime).format('YYYY-MM-DD')).valueOf() - moment(dropTime).valueOf();
+    const hourMinutes = moment(props.event.startTime).valueOf() - daysM - moment(dropTime).valueOf();
+    const finalStartime = moment(moment(dropTime).valueOf() + hourMinutes).format(dateType);
+
+    props.onChangeTime(props.event.id, finalStartime, props.event.endTime);
   },
 };
 

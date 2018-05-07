@@ -24,7 +24,7 @@ const eventSource = {
       startTime = dropTime;
       endTime = props.date;
     }
-    props.createNewEvent(startTime, endTime);
+    props.createNewEvent(`${startTime} 00:00:00`, `${endTime} 23:59:59`);
   },
 };
 
@@ -47,9 +47,9 @@ class New extends PureComponent {
   }
 
   render() {
-    const { connectDragSource, date } = this.props;
+    const { connectDragSource, date, dateType } = this.props;
     return connectDragSource(
-      <div className="d-new" onDoubleClick={() => {this.props.createNewEvent(date, date)}}>
+      <div className="d-new" onDoubleClick={() => { this.props.createNewEvent(moment(`${date} 00:00:00`).format(dateType), moment(`${date} 23:59:59`).format(dateType)) }}>
         {this.props.children}
       </div>
     );

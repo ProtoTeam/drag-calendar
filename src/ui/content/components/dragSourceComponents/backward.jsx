@@ -16,9 +16,15 @@ class Backward extends PureComponent {
   }
 
   render() {
-    const { connectDragSource } = this.props;
+    const { connectDragSource, draggable } = this.props;
+    if (!draggable) {
+      return (
+        <div className="d-backward">
+        </div>
+      );
+    }
     return connectDragSource(
-      <div className="d-backward">
+      <div className="d-backward draggable">
       </div>
     );
   }

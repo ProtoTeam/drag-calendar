@@ -16,9 +16,15 @@ class Forward extends PureComponent {
   }
 
   render() {
-    const { connectDragSource } = this.props;
+    const { connectDragSource, draggable } = this.props;
+    if (!draggable) {
+      return (
+        <div className="d-forward">
+        </div>
+      );
+    }
     return connectDragSource(
-      <div className="d-forward">
+      <div className="d-forward draggable">
       </div>
     );
   }

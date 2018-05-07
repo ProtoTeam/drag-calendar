@@ -33,24 +33,56 @@ class Event extends PureComponent {
     });
   }
 
-  render() {
-    const { eventText, event, connectDragSource, deleteEvent, eventForm} = this.props;
+  renderEvent = () => {
+    const { eventText, event, deleteEvent, eventForm, popoverControl } = this.props;
     const { popoverVisible } = this.state;
+    if (popoverControl) {
+      return (
+        <div className={`d-event ${calEventClassName(event)}`}>
+          <Popover
+            content={
+              eventForm(event, this.closePopover)
+            }
+            title=""
+            trigger="click"
+            visible={popoverVisible}
+            draggable={false}
+            placement="right" >
+            <div onClick={this.showPopover} className="d-holder">
+              {eventText}
+            </div>
+          </Popover>
+        </div>
+      );
+    } else {
+      return (
+        <div className={`d-event ${calEventClassName(event)}`}>
+          <Popover
+            content={
+              eventForm(event, this.closePopover)
+            }
+            title=""
+            trigger="click"
+            draggable={false}
+            placement="right" >
+            <div onClick={this.showPopover} className="d-holder">
+              {eventText}
+            </div>
+          </Popover>
+        </div>
+      );
+    }
+
+  }
+
+  render() {
+    const { draggable, connectDragSource } = this.props;
+    if (!draggable) {
+      return this.renderEvent();
+
+    }
     return connectDragSource(
-      <div className={`d-event ${calEventClassName(event)}`}>
-        <Popover
-          content={
-            eventForm(event, this.closePopover)
-          }
-          title=""
-          trigger="click"
-          visible={popoverVisible}
-          placement="right" >
-          <div onClick={this.showPopover} className="d-holder">
-            {eventText}
-          </div>
-        </Popover>
-      </div>
+      this.renderEvent()
     );
   }
 }

@@ -7,15 +7,15 @@
 ### 运行demo
 运行demo请clone项目并进入项目的demo目录
 
-    npm install
+    tnpm install
 
-    npm start
+    tnpm start
 
 然后访问 localhost:8000/ 就能看到。
 
 ### 使用
 
-    npm install drag-calendar --save
+    npm install calendar --save
 
 然后在你的项目里
 
@@ -42,6 +42,12 @@
 ```
 
 ### 参数列表
+##### draggable(可选)
+是否有拖动的效果，默认为true
+
+##### popoverControl(可选)
+是否需要页面点击清理popover，默认为true，这个设置为false之后，eventForm的第二个参数会失效哈。
+
 ##### monthStr
 当前展示几月份的，格式"YYYY-MM"
 
@@ -74,9 +80,18 @@
 函数有1个参数，为事件id
 
 ##### createNewEvent
-创建事件的函数
+创建事件的函数，函数有2个参数，分别为开始时间和结束时间
 
-函数有2个参数，分别为开始时间和结束时间
+### changeMonth
+点击左右切换日期，我会将新的monthStr传出来，让外部传入，这个接口主要是外部可能需要重新请求数据
 
-### Tip
-有优化想法的话欢迎提PR，我估计没时间了...
+### children(可选)
+组件可以传入children传入渲染
+
+### dateType(可选)
+日历支持粒度切换，默认为'YYYY-MM-DD'，支持传入'YYYY-MM-DD HH:mm:ss'或者'YYYY-MM-DD HH:mm'
+
+## tip
+0.0.4升级功能：
+ - 支持配置draggable,popoverControl,children以及dateType。各参数功能查看以上文档
+ - 拖拽速度调优了

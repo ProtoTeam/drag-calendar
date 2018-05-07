@@ -5,7 +5,8 @@ import EventWrap from '../eventWrap.jsx';
 import New from '../dragSourceComponents/new.jsx';
 import { Types } from '../../util/constant';
 import { dayTarget } from './targetConfig';
-import { getDateAllEvents, sortAllEvents,
+import {
+  getDateAllEvents, sortAllEvents,
   getShowEventsArr, calNewLastEvents,
 } from '../../util/calEventsHelper';
 import './day.less';
@@ -27,7 +28,9 @@ class Day extends PureComponent {
    * 渲染事件区域
    */
   renderEvents = data => {
-    const { onChangeTime, setHoverState, clearDragEvent, resetEventLists, deleteEvent, eventForm } = this.props;
+    const { onChangeTime, setHoverState, clearDragEvent, dateType,
+      resetEventLists, deleteEvent, eventForm, draggable, popoverControl
+    } = this.props;
     const { date, dateIndex, eventList, lastEventsArr } = data;
     let eventAll = getDateAllEvents(date, eventList);
     eventAll = sortAllEvents(eventAll);
@@ -41,14 +44,16 @@ class Day extends PureComponent {
           if (event === null) {
             return (
               <div key={index} className="d-event-content empty">
-                {this.renderNewDragComponent()}
+                {draggable ? this.renderNewDragComponent() : null}
               </div>
             );
           }
           const eventText = (event.hasLast && dateIndex % 7 !== 0) ? '' : event.displayName;
           return (
             <EventWrap
+              popoverControl={popoverControl}
               key={event.id}
+              draggable={draggable}
               eventText={eventText}
               event={event}
               onChangeTime={onChangeTime}
@@ -68,9 +73,10 @@ class Day extends PureComponent {
    * 渲染新建的拖拽区域
    */
   renderNewDragComponent = (text) => {
-    const { setHoverState, clearDragEvent, resetEventLists, createNewEvent, dateData } = this.props;
+    const { setHoverState, clearDragEvent, resetEventLists, createNewEvent, dateData, dateType } = this.props;
     return (
       <New
+        dateType={dateType}
         date={dateData.date}
         createNewEvent={createNewEvent}
         setHoverState={setHoverState}
@@ -83,12 +89,12 @@ class Day extends PureComponent {
   };
 
   render() {
-    const { dateData, lastEventsArr, eventList, connectDropTarget } = this.props;
+    const { dateData, lastEventsArr, eventList, connectDropTarget, draggable, dateType } = this.props;
     const hoverClass = dateData._hover ? "hover" : '';
     return connectDropTarget(
       <div className={`d ${dateData.className} ${hoverClass}`}>
         <div className="d-header">
-          {this.renderNewDragComponent(`${dateData.displayDate} 日`)}
+          {draggable ? this.renderNewDragComponent(`${dateData.displayDate} 日`) : `${dateData.displayDate} 日`}
         </div>
         {this.renderEvents({
           date: dateData.date,
@@ -97,7 +103,7 @@ class Day extends PureComponent {
           lastEventsArr,
         })}
         <div className="d-empty-container">
-          {this.renderNewDragComponent()}
+          {draggable ? this.renderNewDragComponent() : null}
         </div>
       </div>
     );
