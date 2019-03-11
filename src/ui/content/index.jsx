@@ -41,10 +41,9 @@ export default class DateContent extends PureComponent {
 
     const newEventList = [];
     const event = _.find(eventList, { id });
-    const diffStart = event ? moment(targetDate).valueOf() - moment(event.startTime).valueOf() : '';
-    const dateMils = event ? moment(event.endTime).valueOf() - moment(event.startTime).valueOf() : '';
-    const newStartTime = moment(moment(hoverDate).valueOf() - diffStart).format(dateType);
-    const newEndTime = moment(moment(hoverDate).valueOf() + dateMils - diffStart).format(dateType);
+    const diff = event ? moment(hoverDate).valueOf() - moment(targetDate).valueOf() : '';
+    const newStartTime = moment(moment(event.startTime).valueOf() + diff).format(dateType);
+    const newEndTime = moment(moment(event.endTime).valueOf() + diff).format(dateType);
     const newRes = Object.assign({}, event, { id: TEMP_SHOW_ID, startTime: newStartTime, endTime: newEndTime, _hide: false, _temp: true });
 
     _.forEach(eventList, e => {
